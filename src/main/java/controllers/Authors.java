@@ -78,7 +78,7 @@ public class Authors {
 
         if (rs.next()) {
             if (rs.getBoolean(1) == false) {
-                throw new Exception("User is not an admin - access denied");
+                return("{\"Success\":\"User is not an admin - access denied\"}");
             } else {
 
                 try {
