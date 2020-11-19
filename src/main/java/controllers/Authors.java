@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import server.Main;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,7 +51,7 @@ public class Authors {
             ps.setInt(1, AuthorID);
             ResultSet results = ps.executeQuery();
             JSONObject response = new JSONObject();
-            if (results.next()== true) {
+            if (results.next() == true) {
                 response.put("AuthorID", AuthorID);
                 response.put("First Name", results.getString(1));
                 response.put("Last Name", results.getString(2));
@@ -64,5 +65,36 @@ public class Authors {
     }
 
 
+    @GET
+    @Path("delete/{AuthorID}")
+    public String DeleteAuthor(@PathParam("AuthorID") Integer AuthorID, @CookieParam("SessionToken") Cookie SessionToken) throws Exception {
+        System.out.println("Invoked Authors.DeleteAuthor()");
+        if (AuthorID == null) {
+            throw new Exception("No AuthorID specified");
+        }
+        PreparedStatement ps = Main.db.prepareStatement("SELECT Admin FROM Users WHERE SessionToken = ?");
+        ps.setString(1, SessionToken.getValue());
+        ResultSet rs = ps.executeQuery();
 
+        if (rs.next()) {
+            if (rs.getBoolean(1) == false) {
+                throw new Exception("User is not an admin - access denied");
+            } else {
+
+                try {
+                    PreparedStatement Ps = Main.db.prepareStatement("DELETE FROM Authors WHERE AuthorID = ?");
+                    Ps.setInt(1, AuthorID);
+                    Ps.execute();
+
+                } catch (Exception exception) {
+                    System.out.println("Database error: " + exception.getMessage());
+                    return "{\"Error\": \"Unable to delete item, please see server console for more info.\"}";
+                }
+            }
+        }
+        return "{\"OK\": \"Author deleted\"}";}
 }
+
+
+
+
