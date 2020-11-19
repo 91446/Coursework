@@ -37,4 +37,32 @@ public class Authors {
             return "{\"Error\": \"Unable to list items.  Error code xx.\"}";
         }
     }
+
+    @GET
+    @Path("get/{AuthorID}")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+
+    public String GetUser(@PathParam("AuthorID") Integer AuthorID) {
+        System.out.println("Invoked Users.GetUser() with UserID " + AuthorID);
+        try {
+            PreparedStatement ps = Main.db.prepareStatement("SELECT FirstName, LastName, Bio FROM Authors WHERE AuthorID = ?");
+            ps.setInt(1, AuthorID);
+            ResultSet results = ps.executeQuery();
+            JSONObject response = new JSONObject();
+            if (results.next()== true) {
+                response.put("AuthorID", AuthorID);
+                response.put("First Name", results.getString(1));
+                response.put("Last Name", results.getString(2));
+                response.put("Bio", results.getString(3));
+            }
+            return response.toString();
+        } catch (Exception exception) {
+            System.out.println("Database error: " + exception.getMessage());
+            return "{\"Error\": \"Unable to get item, please see server console for more info.\"}";
+        }
+    }
+
+
+
 }
