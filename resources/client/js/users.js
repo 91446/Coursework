@@ -37,8 +37,3 @@ function logout() {
         }
     });
 }
-
-
-
-
-
