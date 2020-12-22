@@ -11,24 +11,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 @Path("recipe/")
-@Consumes(MediaType.MULTIPART_FORM_DATA)
-@Produces(MediaType.APPLICATION_JSON)
 
 public class Recipes {
     @GET
     @Path("list")
+    @Produces(MediaType.APPLICATION_JSON)
     public String RecipeList() {
         System.out.println("Invoked Recipes.RecipeList()");
-        JSONArray response = new JSONArray();
+        JSONArray recipe = new JSONArray();
         try {
             PreparedStatement ps = Main.db.prepareStatement("SELECT RecipeID, Name FROM Recipes");
             ResultSet results = ps.executeQuery();
-            while (results.next() == true) {
+            while (results.next()) {
                 JSONObject row = new JSONObject();
                 row.put("RecipeID", results.getInt(1));
-                row.put("Name", results.getString(2));
-                response.add(row);
+                row.put("RecipeName", results.getString(2));
+                recipe.add(row);
             }
+            JSONObject response = new JSONObject();
+            response.put("recipes", recipe);
             return response.toString();
         } catch (Exception exception) {
             System.out.println("Database error: " + exception.getMessage());

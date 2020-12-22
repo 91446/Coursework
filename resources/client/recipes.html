@@ -3,8 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="js/recipes.js"></script>
 </head>
-<body>
+<body onload="pageLoad()">
+<div class="container bg-white pb-4">
 
+    <h1 >Holly's Recipe Thingummy</h1>
+
+    <div class="text-right">
+        <select id="recipeSort">
+            <option value="name">Sort by Recipe Name</option>
+            <option value="type">Sort by Recipe Type</option>
+        </select>
+            </div>
+    <hr />
+
+    <div id="recipes">
+        <h4 class="text-muted">No recipes have been entered yet.</h4>
+    </div>
+
+
+</div>
 </body>
 </html>
