@@ -20,12 +20,14 @@ public class Recipes {
         System.out.println("Invoked Recipes.RecipeList()");
         JSONArray recipe = new JSONArray();
         try {
-            PreparedStatement ps = Main.db.prepareStatement("SELECT RecipeID, Name FROM Recipes");
+            PreparedStatement ps = Main.db.prepareStatement("SELECT Recipes.RecipeID, Recipes.Name, Recipes.URL, FirstName, LastName FROM Recipes INNER JOIN Authors A on Recipes.AuthorID = A.AuthorID");
             ResultSet results = ps.executeQuery();
             while (results.next()) {
                 JSONObject row = new JSONObject();
                 row.put("RecipeID", results.getInt(1));
                 row.put("RecipeName", results.getString(2));
+                row.put("pathURL", results.getString(3));
+                row.put("Author", results.getString(4) + " " + results.getString(5));
                 recipe.add(row);
             }
             JSONObject response = new JSONObject();
