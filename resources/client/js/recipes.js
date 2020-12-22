@@ -23,7 +23,8 @@ function listRecipes(){
                     + `<td>${r.RecipeName}</td>`
                     + `<td><a href="${r.pathURL}">${r.pathURL}</a></td>`
                     + `<td>${r.Author}</td>`
-                    +`<td id="recipe"+${r.RecipeID}><button onclick="fetchRecipe(${r.RecipeID})">Show Recipe</button> </td>`
+                    + `<td id="recipe"+${r.RecipeID}><button onclick="fetchRecipe(${r.RecipeID})">Show Recipe</button> </td>`
+                    + `<td><button>Delete Recipe</button></td>`
                     + `</tr>`;
             }
             recipesHTML += `</div>`;
