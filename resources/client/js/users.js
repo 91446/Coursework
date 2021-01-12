@@ -5,7 +5,7 @@ function UsersLogin() {
     let formData = new FormData(document.getElementById('LoginForm'));
 
     fetch(url, {
-        method: "POST",
+        method: "post",
         body: formData,
     }).then(response => {
         return response.json();                 //now return that promise to JSON
@@ -15,7 +15,7 @@ function UsersLogin() {
         } else {
             Cookies.set("SessionToken", response.SessionToken);
             Cookies.set("Email", response.Email);
-            window.open("index.html", "_self");       //open index.html in same tab
+            window.open("recipes.html", "_self");       //open index.html in same tab
         }
     });
 }

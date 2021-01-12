@@ -5,23 +5,30 @@
     <title>Title</title>
     <script src="js/recipes.js"></script>
     <link rel="stylesheet" href="css/recipes.css">
+
 </head>
 <body onload="pageLoad()">
 <div class="container bg-white pb-4">
 
     <h1 >Holly's Recipe Thingummy</h1>
 
+    <div class="text-left>"></div>
     <div class="text-right">
-        <select id="recipeSort">
-            <option value="name">Sort by Recipe Name</option>
-            <option value="type">Sort by Recipe Type</option>
-        </select>
-            </div>
-    <hr />
+        <form>
+            <select id="recipeSort">
+                <option value="name">Sort by Recipe Name</option>
+                <option value="type">Sort by Recipe Type</option>
+            </select>
+
+            <input type="text" id="search" name="search" placeholder="Search..">
+        </form>
+    </div>
 
     <div id="recipes">
         <h4 class="text-muted">No recipes have been entered yet.</h4>
     </div>
+
+    <div id="newRecipe"><button onclick="openAddRecipe()">Add New Recipe</button></div>
 
 
 </div>
