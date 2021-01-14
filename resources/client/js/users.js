@@ -33,7 +33,7 @@ function logout() {
         } else {
             Cookies.remove("SessionToken", response.SessionToken);    //UserName and Token are removed
             Cookies.remove("Email", response.Email);
-            window.open("index.html", "_self");       //open index.html in same tab
+            window.open("login.html", "_self");       //open index.html in same tab
         }
     });
 }
