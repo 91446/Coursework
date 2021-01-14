@@ -56,7 +56,8 @@ input:focus {
 }
 
 .button{
-    width: 100%;
+    width: 90%;
+    margin-left: 20px;
     background: #00e673;
     text-align: center;
     line-height: 60px;
