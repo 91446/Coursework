@@ -95,18 +95,39 @@ public class Recipes {
     }
 
     @POST
-    @Path("delete")
+    @Path("delete/{RecipeID}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String deleteRecipe(@FormDataParam("id") int id){
-        System.out.println("invoked recipes/delete " + id);
-        try{
-            return null;
-        }catch(Exception e){
-
+    public String DeleteRecipe(@PathParam("RecipeID") Integer RecipeID) throws Exception {
+        System.out.println("Invoked Recipes.DeleteRecipe()");
+        if (RecipeID == null) {
+            throw new Exception("RecipeID is missing in the HTTP request's URL.");
         }
-        return null;
+        try {
+            PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Recipes WHERE RecipeID = ?");
+            ps.setInt(1, RecipeID);
+            ps.execute();
+            return "{\"OK\": \"Recipe deleted\"}";
+        } catch (Exception exception) {
+            System.out.println("Database error: " + exception.getMessage());
+            return "{\"Error\": \"Unable to delete item, please see server console for more info.\"}";
+        }
     }
+
+
+    // @POST
+   // @Path("delete")
+   // @Consumes(MediaType.MULTIPART_FORM_DATA)
+   // @Produces(MediaType.APPLICATION_JSON)
+   // public String deleteRecipe(@FormDataParam("id") int id){
+   //     System.out.println("invoked recipes/delete " + id);
+   //     try{
+   //         return null;
+   //     }catch(Exception e){
+    //
+   //     }
+    //    return null;
+    //}
 
     @POST
     @Path("add")

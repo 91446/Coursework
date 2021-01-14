@@ -115,6 +115,7 @@ function addRecipe(){
 
 
 function deleteRecipe(){
+    console.log("Invoked deleteRecipe()");
 
 }
 
