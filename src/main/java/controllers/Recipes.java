@@ -21,7 +21,7 @@ public class Recipes {
         System.out.println("Invoked Recipes.RecipeList()");
         JSONArray recipe = new JSONArray();
         try {
-            PreparedStatement ps = Main.db.prepareStatement("SELECT Recipes.RecipeID, Recipes.Name, Recipes.CategoryID ,Recipes.URL, Recipes.AuthorID FROM Recipes ORDER BY Recipes.Name");
+            PreparedStatement ps = Main.db.prepareStatement("SELECT Recipes.RecipeID, Recipes.RecipeName, Recipes.CategoryID ,Recipes.URL, Recipes.AuthorID FROM Recipes ORDER BY Recipes.Name");
             ResultSet results = ps.executeQuery();
 
 

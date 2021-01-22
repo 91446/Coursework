@@ -64,16 +64,32 @@ public class Users{
     }
 
     @POST
-    @Path("save")
-    public String UsersSave(@FormDataParam("UserID") Integer UserID, @FormDataParam("Email") String Email, @FormDataParam("Name") String Name, @FormDataParam("Admin") Integer Admin, @FormDataParam("Password") String Password) {
+    @Path("add")
+    public String UsersAdd(@FormDataParam("Email") String Email, @FormDataParam("Name") String Name, @FormDataParam("Password") String Password) {
         System.out.println("Invoked Users.UsersAdd()");
         try {
-            PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (UserID, Email, Name, Admin, Password) VALUES (?, ?, ?, ?, ?)");
-            ps.setInt(1, UserID);
-            ps.setString(2, Email);
+            PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (Email, Name, Admin, Password) VALUES (?, ?, ?, ?)");
+            ps.setString(1, Email);
             ps.setString(2, Name);
-            ps.setInt(2, Admin);
-            ps.setString(2, Password);
+            ps.setInt(3, 0);
+            ps.setString(4, Password);
+            ps.execute();
+            return "{\"OK\": \"Added user.\"}";
+        } catch (Exception exception) {
+            System.out.println("Database error: " + exception.getMessage());
+            return "{\"Error\": \"Unable to create new item, please see server console for more info.\"}";
+        }
+    }
+
+    @POST
+    @Path("save")
+    public String UsersSave(@FormDataParam("Email") String Email, @FormDataParam("Name") String Name, @FormDataParam("Password") String Password) {
+        System.out.println("Invoked Users.UsersAdd()");
+        try {
+            PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (Email, Name, Password) VALUES (?, ?, ?)");
+            ps.setString(1, Email);
+            ps.setString(2, Name);
+            ps.setString(3, Password);
             ps.execute();
             return "{\"OK\": \"Added user.\"}";
         } catch (Exception exception) {
