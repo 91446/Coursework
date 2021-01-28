@@ -15,12 +15,12 @@ function listRecipes(){
             alert(JSON.stringify(response));        // if it does, convert JSON object to string and alert
         } else {
             let recipesHTML = `<div>`;
-            recipesHTML += `<table id="tRecipes"><th>Recipe ID</th><th>Recipe Name</th><th>Category</th><th>URL</th><th>Author</th>`;
+            recipesHTML += `<table id="tRecipes"><th>Recipe ID</th><th>Recipe Name</th><th>Category</th><th>URL</th><th>Author</th><th>Rating</th><th>More</th><th>Delete</th>`;
             for(let r of response.recipes){
                 recipesHTML += `<tr class="recipe_${r.RecipeID}">`
 
                     + `<td>${r.RecipeID}</td>`
-                    + `<td>${r.RecipeName}</td>`
+                    + `<td>${r.Name}</td>`
                     + `<td>${r.CategoryName}</td>`
                     + `<td><a href="${r.pathURL}">${r.pathURL}</a></td>`
                     + `<td>${r.Author}</td>`
