@@ -67,46 +67,6 @@ public class Recipes {
         }
     }
 
-
-    /*@POST
-    @Path("get/{RecipeID}")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)*/
-
-    /*public String GetRecipe(@PathParam("RecipeID") Integer RecipeID) {
-        System.out.println("Invoked Recipes.GetRecipe() with RecipeID of " + RecipeID);
-        JSONObject jso = new JSONObject();
-        JSONArray ingredients = new JSONArray();
-        JSONArray methods = new JSONArray();
-        try {
-            PreparedStatement psIngredients = Main.db.prepareStatement("SELECT Ingredient FROM Ingredients WHERE RecipeID=?");
-            PreparedStatement psMethods = Main.db.prepareStatement("SELECT Method FROM Methods WHERE RecipeID = ?");
-            psIngredients.setInt(1,RecipeID);
-            psMethods.setInt(1,RecipeID);
-            ResultSet rsIngredients = psIngredients.executeQuery();
-            ResultSet rsMethods = psMethods.executeQuery();
-            /*if(!rsIngredients.next()){
-                return "{\"Error\": \"Unable to find matching ingredients for this recipe.\"}";
-            }else if(!rsMethods.next()){
-                return "{\"Error\": \"Unable to find matching methods for this recipe.\"}";
-            }*//*
-            while(rsIngredients.next()){
-                ingredients.add(rsIngredients.getString(1));
-            }
-            while(rsMethods.next()){
-                methods.add(rsMethods.getString(1));
-            }
-            JSONObject response = new JSONObject();
-            response.put("ingredients",ingredients);
-            response.put("methods", methods);
-            System.out.println(response.toString());
-            return response.toString();
-        } catch (Exception exception) {
-            System.out.println("Database error: " + exception.getMessage());
-            return "{\"Error\": \"Unable to get item, please see server console for more info.\"}";
-        }
-    }*/
-
     //this API methods returns a specific recipe with a specified RecipeID
     @GET
     @Path("get/{RecipeID}")
@@ -114,17 +74,18 @@ public class Recipes {
     public String GetRecipe(@PathParam("RecipeID") Integer RecipeID) {
         //additional print statement makes debugging easier. Appears on server console
         System.out.println("Invoked Recipes.GetRecipe() with RecipeID " + RecipeID);
+
         try {
-            //Multiple prepared statements fetch the data from different tables, where the ? binds with an an actual value, RecipeID, before being executed
-            PreparedStatement psRecipe = Main.db.prepareStatement("SELECT Name, Description, CategoryID, AuthorID FROM Recipes WHERE RecipeID=?");
             PreparedStatement psMethod = Main.db.prepareStatement("SELECT Method FROM Methods WHERE RecipeID=?");
             PreparedStatement psIngredients = Main.db.prepareStatement("SELECT Ingredient FROM Ingredients WHERE RecipeID=?");
 
-            psRecipe.setInt(1,RecipeID);
+            PreparedStatement recipe = Main.db.prepareStatement("SELECT Recipes.Name, Recipes.Description,C.Name,A.FirstName,A.LastName FROM Recipes INNER JOIN Categories C on C.CategoryID = Recipes.CategoryID INNER JOIN Authors A on Recipes.AuthorID = A.AuthorID WHERE RecipeID=?");
+            recipe.setInt(1,RecipeID);
+            //psRecipe.setInt(1,RecipeID);
             psMethod.setInt(1,RecipeID);
             psIngredients.setInt(1,RecipeID);
-
-            ResultSet rsRecipe = psRecipe.executeQuery();
+            ResultSet rsRecipe = recipe.executeQuery();
+            //ResultSet rsRecipe = psRecipe.executeQuery();
             ResultSet rsMethod = psMethod.executeQuery();
             ResultSet rsIngredients = psIngredients.executeQuery();
 
@@ -132,33 +93,34 @@ public class Recipes {
             JSONArray Ingredients = new JSONArray();
             JSONArray Method = new JSONArray();
 
-            PreparedStatement psCategory = Main.db.prepareStatement("SELECT Name FROM Categories WHERE CategoryID=rsRecipe.getInt(3)");
-            PreparedStatement psAuthor = Main.db.prepareStatement("SELECT Name FROM Author WHERE AuthorID=rsRecipe.getInt(4)");
-            psCategory.setInt(1,RecipeID);
-            psAuthor.setInt(1,RecipeID);
-            ResultSet rsCategory = psCategory.executeQuery();
-            ResultSet rsAuthor = psAuthor.executeQuery();
-
             //Checks that the ingredients and methods are not null
-            if(!rsIngredients.next()==true){
+            if(!rsIngredients.next()){
                 return "{\"Error\": \"Unable to find matching ingredients for this recipe.\"}";
-            }else if(!rsMethod.next()==true){
+            }else if(!rsMethod.next()){
                 return "{\"Error\": \"Unable to find matching methods for this recipe.\"}";
             }
+
+            PreparedStatement psFindMethods = Main.db.prepareStatement("SELECT Method FROM Methods WHERE RecipeID=?");
+            PreparedStatement psFindIngredients = Main.db.prepareStatement("SELECT Ingredient FROM Ingredients WHERE RecipeID=?");
+            psFindIngredients.setInt(1,RecipeID);
+            psFindMethods.setInt(1,RecipeID);
+            ResultSet rsFindMethods = psFindMethods.executeQuery();
+            ResultSet rsFindIngredients = psFindIngredients.executeQuery();
             //Keeps looking at the next ingredients and methods until there's none left
-            while(rsIngredients.next()==true){
-                Ingredients.add(rsIngredients.getString(1));
+            while(rsFindIngredients.next()){
+                Ingredients.add(rsFindIngredients.getString(1));
             }
-            while(rsMethod.next()==true){
-                Method.add(rsMethod.getString(1));
+            while(rsFindMethods.next()){
+                Method.add(rsFindMethods.getString(1));
             }
+
 
             //Adds each item to the list
             JSONObject response = new JSONObject();
             response.put("Name: ", rsRecipe.getString(1));
             response.put("Description: ", rsRecipe.getString(2));
-            response.put("Category: ", rsCategory);
-            response.put("Author: ", rsAuthor);
+            response.put("Category: ", rsRecipe.getString(3));
+            response.put("Author: ", rsRecipe.getString(4) + " " + rsRecipe.getString(5));
             response.put("Ingredients: ", Ingredients);
             response.put("Method: ", Method);
             //additional print statement makes debugging easier. Appears on server console
@@ -199,35 +161,21 @@ public class Recipes {
     }
 
 
-    // @POST
-   // @Path("delete")
-   // @Consumes(MediaType.MULTIPART_FORM_DATA)
-   // @Produces(MediaType.APPLICATION_JSON)
-   // public String deleteRecipe(@FormDataParam("id") int id){
-   //     System.out.println("invoked recipes/delete " + id);
-   //     try{
-   //         return null;
-   //     }catch(Exception e){
-    //
-   //     }
-    //    return null;
-    //}
-
     @POST
     @Path("add")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String addRecipe(@FormDataParam("recipeName") String name,@FormDataParam("category") String category, @FormDataParam("description") String description, @FormDataParam("url") String url, @FormDataParam("author") String author){
+    public String addRecipe(@FormDataParam("Name") String Name, @FormDataParam("Category") String Category, @FormDataParam("Description") String Description, @FormDataParam("URL") String URL, @FormDataParam("Author") String Author){
         try{
-            System.out.println("Invoked /recipe/add");
+            System.out.println("Invoked Recipe.AddRecipe()");
             PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Recipes(Name, CategoryID, Description, URL, AuthorID) VALUES (?,?,?,?,?)");
-            PreparedStatement getCategoryID = Main.db.prepareStatement("SELECT CategoryID FROM Categories WHERE Name = ?");
-            getCategoryID.setString(1,category);
+            PreparedStatement getCategoryID = Main.db.prepareStatement("SELECT CategoryID FROM Categories WHERE CategoryID = ?");
+            getCategoryID.setString(1,Category);
             ResultSet rsCat = getCategoryID.executeQuery();
             if(!rsCat.next()){
                 return "{\"Error\": \"Unable to find category.\"}";
             }
-            String authorNames[] = author.split(" ");
+            String authorNames[] = Author.split(" ");
             PreparedStatement getAuthorID = Main.db.prepareStatement("SELECT AuthorID FROM Authors WHERE FirstName = ? AND LastName = ?");
             getAuthorID.setString(1,authorNames[0]);
             getAuthorID.setString(2,authorNames[1]);
@@ -235,10 +183,10 @@ public class Recipes {
             if(!rsAuth.next()){
                 return "{\"Error\": \"Unable to find author.\"}";
             }
-            ps.setString(1,name);
+            ps.setString(1,Name);
             ps.setInt(2, rsCat.getInt(1));
-            ps.setString(3,description);
-            ps.setString(4,url);
+            ps.setString(3,Description);
+            ps.setString(4,URL);
             ps.setInt(5,rsAuth.getInt(1));
             ps.executeUpdate();
             return "{\"Success\": \"Recipe successfully added\"}";

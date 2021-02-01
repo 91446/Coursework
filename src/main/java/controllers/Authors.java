@@ -17,13 +17,19 @@ import java.sql.ResultSet;
 
 public class Authors {
     @GET
+    //uses get to read
     @Path("list")
     public String UsersList() {
-        System.out.println("Invoked Users.AuthorsList()");
+        //additional print statement makes debugging easier. Appears on server console
+        System.out.println("Invoked Authors.AuthorsList()");
+        //JSON prepared using SimpleJSON Library. Construct new JSON array, and creates objects from each new row
         JSONArray response = new JSONArray();
+        //try...catch is used to find any errors as I'm using a file external to the program
         try {
+            //Uses prepared statements to avoid SQL injection. Parameters treated like data and can be executed
             PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Authors");
             ResultSet results = ps.executeQuery();
+            //loops through results until there's no next row
             while (results.next() == true) {
                 JSONObject row = new JSONObject();
                 row.put("AuthorID", results.getInt(1));
@@ -32,26 +38,34 @@ public class Authors {
                 row.put("Bio", results.getString(4));
                 response.add(row);
             }
+            //this message will be shown in GitBash
             return response.toString();
         } catch (Exception exception) {
+            //additional print statement makes debugging easier. Appears on server console
             System.out.println("Database error: " + exception.getMessage());
+            //this message will be shown in GitBash
             return "{\"Error\": \"Unable to list items.  Error code xx.\"}";
         }
     }
 
     @GET
+    //PathParam in method signature to capture a value added to end of URL
     @Path("get/{AuthorID}")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
 
-    public String GetUser(@PathParam("AuthorID") Integer AuthorID) {
-        System.out.println("Invoked Users.GetUser() with UserID " + AuthorID);
+    public String GetAuthor(@PathParam("AuthorID") Integer AuthorID) {
+        //additional print statement makes debugging easier. Appears on server console
+        System.out.println("Invoked Authors.GetAuthor() with AuthorID " + AuthorID);
+        //try...catch is used to find any errors as I'm using a file external to the program
         try {
             PreparedStatement ps = Main.db.prepareStatement("SELECT FirstName, LastName, Bio FROM Authors WHERE AuthorID = ?");
             ps.setInt(1, AuthorID);
             ResultSet results = ps.executeQuery();
+            //No need for array as there's only one item
             JSONObject response = new JSONObject();
             if (results.next() == true) {
+                //adds each data to the item
                 response.put("AuthorID", AuthorID);
                 response.put("First Name", results.getString(1));
                 response.put("Last Name", results.getString(2));
@@ -59,40 +73,63 @@ public class Authors {
             }
             return response.toString();
         } catch (Exception exception) {
+            //additional print statement makes debugging easier. Appears on server console
             System.out.println("Database error: " + exception.getMessage());
             return "{\"Error\": \"Unable to get item, please see server console for more info.\"}";
         }
     }
 
 
-    @GET
+    @POST
+    //PathParam in method signature to capture a value added to end of URL
     @Path("delete/{AuthorID}")
-    public String DeleteAuthor(@PathParam("AuthorID") Integer AuthorID, @CookieParam("SessionToken") Cookie SessionToken) throws Exception {
+    public String DeleteCategory(@PathParam("AuthorID") Integer AuthorID) throws Exception {
         System.out.println("Invoked Authors.DeleteAuthor()");
-        if (AuthorID == null) {
-            throw new Exception("No AuthorID specified");
+        //First checks to see if the AuthorID exists
+        if (AuthorID==null) {
+            //if not the method finishes
+            throw new Exception("AuthorID is missing in the HTTP request's URL");
         }
-        PreparedStatement ps = Main.db.prepareStatement("SELECT Admin FROM Users WHERE SessionToken = ?");
-        ps.setString(1, SessionToken.getValue());
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            if (rs.getBoolean(1) == false) {
-                return("{\"Success\":\"User is not an admin - access denied\"}");
-            } else {
-
-                try {
-                    PreparedStatement Ps = Main.db.prepareStatement("DELETE FROM Authors WHERE AuthorID = ?");
-                    Ps.setInt(1, AuthorID);
-                    Ps.execute();
-
-                } catch (Exception exception) {
-                    System.out.println("Database error: " + exception.getMessage());
-                    return "{\"Error\": \"Unable to delete item, please see server console for more info.\"}";
-                }
-            }
+        //try...catch is used to find any errors as I'm using a file external to the program
+        try {
+            //Uses prepared statements to avoid SQL injection. Parameters treated like data and can be executed.
+            PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Authors WHERE AuthorID=?");
+            ps.setInt(1, AuthorID);
+            ps.execute();
+            //this message is shown in GitBash
+            return "{\"OK\": \"Deleted author.\"}";
+        } catch (Exception exception) {
+            //additional print statement makes debugging easier. Appears on server console
+            System.out.println("Database error: " + exception.getMessage());
+            //this message is shown in GitBash
+            return "{\"Error\": \"Unable to delete item, please see server console for more info\"}";
         }
-        return "{\"OK\": \"Author deleted\"}";}
+    }
+
+    @POST
+    //PathParam in method signature to capture a value added to end of URL
+    @Path("add")
+    //Form data params come from HTML form sent with the fetch().
+    public String AuthorsAdd(@FormDataParam("FirstName") String FirstName, @FormDataParam("LastName") String LastName, @FormDataParam("Bio") String Bio) {
+        //additional print statement makes debugging easier. Appears on server console
+        System.out.println("Invoked Authors.AuthorsAdd()");
+        //try...catch is used to find any errors as I'm using a file external to the program
+        try {
+            //Uses prepared statements to avoid SQL injection. Parameters treated like data and can be executed. AuthorID automatically generated
+            PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Authors (FirstName, LastName, Bio) VALUES (?, ?, ?)");
+            ps.setString(1, FirstName);
+            ps.setString(2, LastName);
+            ps.setString(3, Bio);
+            ps.execute();
+            //this message is shown in GitBash
+            return "{\"OK\": \"Added author.\"}";
+        } catch (Exception exception) {
+            //additional print statement makes debugging easier. Appears on server console
+            System.out.println("Database error: " + exception.getMessage());
+            //this message is shown in GitBash
+            return "{\"Error\": \"Unable to add new item, please see server console for more info\"}";
+        }
+    }
 }
 
 
