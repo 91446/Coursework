@@ -165,17 +165,17 @@ public class Recipes {
     @Path("add")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String addRecipe(@FormDataParam("Name") String Name, @FormDataParam("Category") String Category, @FormDataParam("Description") String Description, @FormDataParam("URL") String URL, @FormDataParam("Author") String Author){
+    public String addRecipe(@FormDataParam("Name") String name,@FormDataParam("category") String category, @FormDataParam("description") String description, @FormDataParam("url") String url, @FormDataParam("author") String author){
         try{
-            System.out.println("Invoked Recipe.AddRecipe()");
+            System.out.println("Invoked /recipe/add");
             PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Recipes(Name, CategoryID, Description, URL, AuthorID) VALUES (?,?,?,?,?)");
-            PreparedStatement getCategoryID = Main.db.prepareStatement("SELECT CategoryID FROM Categories WHERE CategoryID = ?");
-            getCategoryID.setString(1,Category);
+            PreparedStatement getCategoryID = Main.db.prepareStatement("SELECT CategoryID FROM Categories WHERE Name = ?");
+            getCategoryID.setString(1,category);
             ResultSet rsCat = getCategoryID.executeQuery();
             if(!rsCat.next()){
                 return "{\"Error\": \"Unable to find category.\"}";
             }
-            String authorNames[] = Author.split(" ");
+            String authorNames[] = author.split(" ");
             PreparedStatement getAuthorID = Main.db.prepareStatement("SELECT AuthorID FROM Authors WHERE FirstName = ? AND LastName = ?");
             getAuthorID.setString(1,authorNames[0]);
             getAuthorID.setString(2,authorNames[1]);
@@ -183,10 +183,10 @@ public class Recipes {
             if(!rsAuth.next()){
                 return "{\"Error\": \"Unable to find author.\"}";
             }
-            ps.setString(1,Name);
+            ps.setString(1,name);
             ps.setInt(2, rsCat.getInt(1));
-            ps.setString(3,Description);
-            ps.setString(4,URL);
+            ps.setString(3,description);
+            ps.setString(4,url);
             ps.setInt(5,rsAuth.getInt(1));
             ps.executeUpdate();
             return "{\"Success\": \"Recipe successfully added\"}";

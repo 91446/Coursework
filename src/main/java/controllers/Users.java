@@ -113,7 +113,7 @@ public class Users{
         //First checks to see if the UserID exists
         if (UserID==null) {
             //if not the method finishes
-            throw new Exception("CategoryID is missing in the HTTP request's URL");
+            throw new Exception("UserID is missing in the HTTP request's URL");
         }
         //try...catch is used to find any errors as I'm using a file external to the program
         try {
