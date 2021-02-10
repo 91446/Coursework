@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Eat Easy - Categories</title>
-    <script src="/client/js/users.js"></script>
+    <script src="js/categories.js"></script>
     <link rel="stylesheet" type="text/css" href="/client/css/nav.css">
     <link rel="stylesheet" type="text/css" href="/client/css/grid.css">
     <link href="https://fonts.google.com/specimen/Barlow#standard-styles">
@@ -11,7 +11,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
     </style>
 </head>
-<body>
+<body onload="pageLoad()">
 <header>
     <div class="container">
 
@@ -36,6 +36,13 @@
 </header>
 
 <p style="text-align:center">Click on each category below to find the relevant recipes.</p>
+
+<table id="categories">
+    <!--<th>Category Name</th>
+    <th>Description</th>-->
+    <h4 class="text-muted">No categories have been entered yet.</h4>
+</table>
+
 
 </body>
 </html>

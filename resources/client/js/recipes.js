@@ -115,7 +115,76 @@ function addRecipe(){
 
 
 function deleteRecipe(){
-    console.log("Invoked deleteRecipe()");
 
 }
 
+/*function fetchRecipe(id){
+    document.getElementById('recipe'+id);
+    console.log("invoked fetchRecipe() with button 'recipe"+id+"'");
+    //let recipe = '{"id":id}';
+    let recipe = new FormData();
+    recipe.append("RecipeID",id);
+    let url = "/recipe/get/";
+
+    fetch(url, {
+        method: 'post',
+        body: recipe,
+    }).then(response => {
+        return response.json();                 //now return that promise to JSON
+    }).then(response => {
+        if (response.hasOwnProperty("Error")) {
+            alert(JSON.stringify(response));        // if it does, convert JSON object to string and alert
+        } else {
+            let recipeDetailsHTML = "<h2>Ingredients</h2>";
+            recipeDetailsHTML += `<div id="ingredients"><table>`;
+            for(let m of response.methods){
+                recipeDetailsHTML += `<tr><td>${m}</td></tr>`;
+            }
+            recipeDetailsHTML += `</table></div>`;
+            recipeDetailsHTML += `<h2>Methods</h2><div id="methods"><table>`;
+
+            for(i of response.ingredients){
+                recipeDetailsHTML += `<tr><td>${i}</td></tr>`;
+            }
+            recipeDetailsHTML += `</table></div><button onclick="listRecipes()">Back</button>`;
+
+            document.getElementById('recipes').innerHTML=recipeDetailsHTML;  //
+        }
+    });
+
+}
+
+function openAddRecipe(){
+    window.open("AddRecipe.html", "_self");
+}
+
+function back(){
+    window.open("recipes.html","_self")
+}
+
+function addRecipe(){
+    console.log("Invoked addRecipe()");
+    let formData = new FormData(document.getElementById('recipes'));
+    let url = "/recipe/add";
+    fetch(url, {
+        method: 'POST',
+        body: formData,
+    }).then(response => {
+        return response.json();                 //now return that promise to JSON
+    }).then(response => {
+        if (response.hasOwnProperty("Error")) {
+            alert(JSON.stringify(response));        // if it does, convert JSON object to string and alert
+        } else {
+            alert(JSON.stringify(response));
+            window.open("recipes.html","_self")
+        }
+    });
+}
+
+
+
+function deleteRecipe(){
+    console.log("Invoked deleteRecipe()");
+
+}
+*/
